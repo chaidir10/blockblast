@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1" />
+  <meta name="theme-color" content="#7c3aed" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="BlockBlast" />
+  <meta name="description" content="Premium Block Blast puzzle game — drag & drop blocks to clear lines!" />
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Apple Touch Icons (fallback SVG-based) -->
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+
+  <title>Block Blast Premium</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SPLASH SCREEN
+══════════════════════════════════════ -->
+<div id="splash">
+  <div class="splash-logo">⬛ Block Blast</div>
+  <div class="splash-sub">Premium Edition</div>
+  <div class="splash-loader">
+    <div class="splash-loader-bar"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     BACKGROUND CANVAS
+══════════════════════════════════════ -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- ══════════════════════════════════════
+     DRAG GHOST (floating blok saat drag)
+══════════════════════════════════════ -->
+<div id="drag-ghost"></div>
+
+<!-- ══════════════════════════════════════
+     POWER-UP MODE BANNER
+══════════════════════════════════════ -->
+<div id="powerup-mode-banner"></div>
+
+<!-- ══════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════ -->
+<div id="app">
+
+  <!-- HEADER -->
+  <header id="header">
+    <div class="logo">⬛ Block Blast</div>
+    <button class="icon-btn" id="btn-restart-2" title="Restart" aria-label="Restart game">🔄</button>
+  </header>
+
+  <!-- SCORE PANEL -->
+  <section id="score-panel" aria-label="Score panel">
+    <div class="score-card">
+      <div class="score-label">Score</div>
+      <div class="score-value" id="score-val">0</div>
+    </div>
+    <div class="score-card highlight">
+      <div class="score-label">Best</div>
+      <div class="score-value" id="highscore-val">0</div>
+    </div>
+  </section>
+
+  <!-- COMBO DISPLAY -->
+  <div id="combo-display" aria-live="polite"></div>
+
+  <!-- GRID WRAPPER -->
+  <main id="grid-wrapper" aria-label="Game grid">
+    <div id="grid-container">
+      <div id="grid" role="grid" aria-label="9x9 block grid">
+        <!-- Cells rendered by JS -->
+      </div>
+    </div>
+  </main>
+
+  <!-- POWER-UP BAR -->
+  <section id="powerup-bar" aria-label="Power-ups">
+    <button class="powerup-btn bomb"     id="pw-bomb"      aria-label="Bomb power-up">
+      <span class="powerup-icon">💣</span>
+      <span class="powerup-label">Bomb</span>
+    </button>
+    <button class="powerup-btn hammer"   id="pw-hammer"    aria-label="Hammer power-up">
+      <span class="powerup-icon">🔨</span>
+      <span class="powerup-label">Hammer</span>
+    </button>
+    <button class="powerup-btn shuffle"  id="pw-shuffle"   aria-label="Shuffle power-up">
+      <span class="powerup-icon">🔀</span>
+      <span class="powerup-label">Shuffle</span>
+    </button>
+    <button class="powerup-btn undo-btn" id="pw-undo"      aria-label="Undo last move">
+      <span class="powerup-icon">↩️</span>
+      <span class="powerup-label">Undo</span>
+    </button>
+    <button class="powerup-btn clearline" id="pw-clearline" aria-label="Clear line power-up">
+      <span class="powerup-icon">⚡</span>
+      <span class="powerup-label">Clear</span>
+    </button>
+  </section>
+
+  <!-- BLOCK TRAY -->
+  <section id="tray" aria-label="Available blocks">
+    <div class="tray-slot" aria-label="Block slot 1"></div>
+    <div class="tray-slot" aria-label="Block slot 2"></div>
+    <div class="tray-slot" aria-label="Block slot 3"></div>
+  </section>
+
+</div><!-- end #app -->
+
+<!-- ══════════════════════════════════════
+     GAME OVER OVERLAY
+══════════════════════════════════════ -->
+<div id="game-over-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Game over">
+  <div class="modal-card">
+    <div class="modal-title">Game Over</div>
+    <div class="modal-subtitle">No more moves available!</div>
+
+    <div class="modal-score-row">
+      <div class="modal-score-item">
+        <div class="modal-score-label">Score</div>
+        <div class="modal-score-val" id="final-score">0</div>
+      </div>
+      <div class="modal-score-item">
+        <div class="modal-score-label">Best</div>
+        <div class="modal-score-val" id="final-best">0</div>
+      </div>
+      <div class="modal-score-item">
+        <div class="modal-score-label">Max Combo</div>
+        <div class="modal-score-val" id="final-combo">0</div>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="btn-restart">▶ Play Again</button>
+    <button class="btn-secondary" onclick="document.getElementById('game-over-overlay').classList.add('hidden')">✕ Close</button>
+  </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
