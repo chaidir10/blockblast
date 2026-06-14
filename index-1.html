@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#7c3aed" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="BlockBlast" />
+  <meta name="description" content="Premium Block Blast puzzle game" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>Block Blast Premium</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-logo">Block Blast</div>
+  <div class="splash-sub">Premium Edition</div>
+  <div class="splash-loader"><div class="splash-loader-bar"></div></div>
+</div>
+
+<!-- BG CANVAS -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- DRAG GHOST -->
+<div id="drag-ghost"></div>
+
+<!-- POWERUP BANNER -->
+<div id="powerup-mode-banner"></div>
+<div id="powerup-cancel-zone"></div>
+
+<!-- SETTINGS PANEL -->
+<div id="settings-overlay" class="modal-overlay hidden">
+  <div class="modal-card">
+    <div class="modal-title">Settings</div>
+    <div class="settings-group">
+      <label class="settings-label">Drag Responsiveness</label>
+      <div class="settings-row">
+        <span class="settings-hint">Smooth</span>
+        <input type="range" id="resp-slider" min="0" max="100" value="80" class="slider" />
+        <span class="settings-hint">Instant</span>
+      </div>
+      <div class="settings-desc" id="resp-desc">Current: High (80)</div>
+    </div>
+    <div class="settings-group">
+      <label class="settings-label">Drag Offset (distance above finger)</label>
+      <div class="settings-row">
+        <span class="settings-hint">Close</span>
+        <input type="range" id="offset-slider" min="0" max="100" value="60" class="slider" />
+        <span class="settings-hint">Far</span>
+      </div>
+      <div class="settings-desc" id="offset-desc">Current: Medium (60)</div>
+    </div>
+    <button class="btn-primary" onclick="closeSettings()">Done</button>
+  </div>
+</div>
+
+<!-- GAME OVER -->
+<div id="game-over-overlay" class="modal-overlay hidden">
+  <div class="modal-card">
+    <div class="modal-icon-big">💀</div>
+    <div class="modal-title">Game Over</div>
+    <div class="modal-subtitle">No more moves available!</div>
+    <div class="modal-score-row">
+      <div class="modal-score-item">
+        <div class="modal-score-label">Score</div>
+        <div class="modal-score-val" id="final-score">0</div>
+      </div>
+      <div class="modal-score-item">
+        <div class="modal-score-label">Best</div>
+        <div class="modal-score-val" id="final-best">0</div>
+      </div>
+      <div class="modal-score-item">
+        <div class="modal-score-label">Combo</div>
+        <div class="modal-score-val" id="final-combo">0</div>
+      </div>
+    </div>
+    <button class="btn-primary" id="btn-restart">Play Again</button>
+    <button class="btn-secondary" onclick="document.getElementById('game-over-overlay').classList.add('hidden')">Close</button>
+  </div>
+</div>
+
+<!-- ══ APP SHELL ══ -->
+<div id="app">
+
+  <!-- HEADER -->
+  <header id="header">
+    <div class="logo">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <rect x="1" y="1" width="8" height="8" rx="2" fill="#a855f7"/>
+        <rect x="13" y="1" width="8" height="8" rx="2" fill="#ec4899"/>
+        <rect x="1" y="13" width="8" height="8" rx="2" fill="#06b6d4"/>
+        <rect x="13" y="13" width="8" height="8" rx="2" fill="#f59e0b"/>
+      </svg>
+      Block Blast
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="btn-settings" aria-label="Settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+      <button class="icon-btn" id="btn-restart-2" aria-label="Restart">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- SCORE -->
+  <section id="score-panel">
+    <div class="score-card">
+      <div class="score-label">SCORE</div>
+      <div class="score-value" id="score-val">0</div>
+    </div>
+    <div class="score-card highlight">
+      <div class="score-label">BEST</div>
+      <div class="score-value" id="highscore-val">0</div>
+    </div>
+  </section>
+
+  <!-- COMBO -->
+  <div id="combo-display"></div>
+
+  <!-- GRID -->
+  <main id="grid-wrapper">
+    <div id="grid-container">
+      <div id="grid"></div>
+    </div>
+  </main>
+
+  <!-- TRAY (above powerups now) -->
+  <section id="tray">
+    <div class="tray-slot"></div>
+    <div class="tray-slot"></div>
+    <div class="tray-slot"></div>
+  </section>
+
+  <!-- POWERUP BAR (bottom) -->
+  <section id="powerup-bar">
+    <button class="powerup-btn" id="pw-bomb" data-type="bomb">
+      <!-- Bomb icon -->
+      <svg class="pw-icon" viewBox="0 0 32 32" fill="none">
+        <circle cx="14" cy="18" r="10" fill="#ef4444" stroke="#dc2626" stroke-width="1.5"/>
+        <path d="M14 8 L18 4" stroke="#f97316" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M18 4 Q22 0 24 4" stroke="#f97316" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <ellipse cx="10" cy="14" rx="3" ry="2" fill="rgba(255,255,255,0.2)" transform="rotate(-30 10 14)"/>
+        <circle cx="26" cy="4" r="2" fill="#f59e0b"/>
+        <path d="M24 4 L26 2 L28 4 L26 6 Z" fill="#fbbf24"/>
+      </svg>
+      <span class="pw-label">Bomb</span>
+    </button>
+
+    <button class="powerup-btn" id="pw-hammer" data-type="hammer">
+      <!-- Hammer icon -->
+      <svg class="pw-icon" viewBox="0 0 32 32" fill="none">
+        <rect x="14" y="16" width="5" height="12" rx="1.5" fill="#92400e" stroke="#78350f" stroke-width="1"/>
+        <rect x="6" y="6" width="18" height="12" rx="3" fill="#f59e0b" stroke="#d97706" stroke-width="1.5"/>
+        <rect x="8" y="8" width="6" height="8" rx="1.5" fill="#fbbf24" opacity="0.5"/>
+        <line x1="8" y1="10" x2="8" y2="16" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span class="pw-label">Hammer</span>
+    </button>
+
+    <button class="powerup-btn" id="pw-shuffle" data-type="shuffle">
+      <!-- Shuffle icon -->
+      <svg class="pw-icon" viewBox="0 0 32 32" fill="none">
+        <rect x="4" y="8" width="10" height="10" rx="2.5" fill="#06b6d4" opacity="0.9"/>
+        <rect x="18" y="8" width="10" height="10" rx="2.5" fill="#a855f7" opacity="0.9"/>
+        <rect x="4" y="20" width="10" height="8" rx="2.5" fill="#ec4899" opacity="0.9"/>
+        <rect x="18" y="20" width="10" height="8" rx="2.5" fill="#10b981" opacity="0.9"/>
+        <path d="M8 13 Q16 13 24 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 2" opacity="0.7"/>
+        <path d="M8 24 Q16 20 24 24" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3 2" opacity="0.5"/>
+      </svg>
+      <span class="pw-label">Shuffle</span>
+    </button>
+
+    <button class="powerup-btn" id="pw-undo" data-type="undo">
+      <!-- Undo icon -->
+      <svg class="pw-icon" viewBox="0 0 32 32" fill="none">
+        <path d="M8 10 L4 14 L8 18" stroke="#a855f7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M4 14 Q4 8 10 6 Q20 4 24 12 Q26 18 22 22 Q18 26 12 24" stroke="#a855f7" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <circle cx="16" cy="17" r="4" fill="#7c3aed" opacity="0.4"/>
+        <path d="M14 17 L16 15 L18 17 L16 19 Z" fill="#a855f7"/>
+      </svg>
+      <span class="pw-label">Undo</span>
+    </button>
+
+    <button class="powerup-btn" id="pw-clearline" data-type="clearline">
+      <!-- Clear Line icon -->
+      <svg class="pw-icon" viewBox="0 0 32 32" fill="none">
+        <rect x="3" y="14" width="26" height="4" rx="2" fill="#10b981" opacity="0.3"/>
+        <line x1="3" y1="16" x2="29" y2="16" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
+        <polygon points="16,4 20,10 12,10" fill="#10b981"/>
+        <polygon points="16,28 20,22 12,22" fill="#10b981"/>
+        <circle cx="6" cy="16" r="2" fill="#34d399"/>
+        <circle cx="26" cy="16" r="2" fill="#34d399"/>
+      </svg>
+      <span class="pw-label">Clear</span>
+    </button>
+  </section>
+
+</div><!-- /#app -->
+
+<script src="game.js"></script>
+</body>
+</html>
